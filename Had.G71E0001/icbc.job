@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#PBS -N hadicbc
+## This is the maximum time
+#PBS -l walltime=24:00:00
+## The serial queue: Pre-Processing is not parallel!!!
+#PBS -q serial
+
+#=================================================== 
+# load required modules
+. /etc/profile.d/modules.sh
+module purge 
+module load openmpi/intel/2013 
+module load netcdf/intel/2013
+
+#=================================================== 
+# run the preprocessing
+cd /home/netapp-clima/scratch/ctang/Modeling/Had.G71E0001
+
+namelist=G71E0001.in
+
+./bin/terrainCLM45 $namelist > terrain.log 2>&1
+./bin/mksurfdataCLM45 $namelist > mksurf.log 2>&1
+./bin/sstCLM45 $namelist > sst.log 2>&1
+./bin/icbcCLM45 $namelist > icbc.log 2>&1
+
+
+#module load nco
+#cd input.RCP85.2088-2100/
+#mv SWIO_CLM45_surface.nc SWIO_CLM45_surface.backup.nc
+#ncap2 -s 'where(lak_2d >= 100) lak_2d=0;where(glc_2d >=100) glc_2d=0;where(wet_2d >= 100) wet_2d = 0' SWIO_CLM45_surface.backup.nc kk.nc
+#mv kk.nc SWIO_CLM45_surface.nc 
+#ncks -C -H -v lak_2d -d jx,68,68 -d iy,88,88 SWIO_CLM45_surface.nc >lak_2d.log
+
+
+#mv terrain.log mksurf.log sst.log icbc.log logfiles/

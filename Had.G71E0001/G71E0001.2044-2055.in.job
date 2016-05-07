@@ -1,0 +1,34 @@
+#!/bin/bash
+
+#PBS -N  Had8.5.2
+## This is the maximum time allowed: if job does not complete,
+## You should manually restart it from the last good savefile (SAV)
+#PBS -l walltime=24:00:00
+## The queue name. try showfree to view available nodes.
+# PBS -q esp_guest
+# PBS -l nodes=4:ppn=8
+# PBS -q esp
+# PBS -l nodes=6:ppn=12
+# =================================================== 
+#PBS -M chao.tang@univ-reunion.fr
+#PBS -q long
+#PBS -l nodes=8:ppn=8
+
+
+#=================================================== 
+# load required modules
+. /etc/profile.d/modules.sh
+module purge 
+module load openmpi/intel/2013
+module load netcdf/intel/2013
+
+#=================================================== 
+# run model
+
+namelist=G71E0001.2044-2055.in
+
+cd /home/netapp-clima-scratch/ctang/Modeling/Had.G71E0001
+
+mpirun -np 64 ./bin/regcmMPICLM45 $namelist > runlog.$namelist 2>&1
+
+
